@@ -45,7 +45,8 @@
           "arch": ["x64"]
         }
       ],
-      "publisherName": "shvnk-Flux Team"
+      "publisherName": "shvnk-Flux Team",
+      "sign": null
     },
     "mac": {
       "target": [
