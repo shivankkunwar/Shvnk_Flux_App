@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/shivankkunwar/shvnk-FLUX
+[submodule "server-node"]
+	path = server-node
+	url = https://github.com/shivankkunwar/shvnk-Flux-backend
