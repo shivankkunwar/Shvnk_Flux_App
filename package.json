@@ -9,6 +9,8 @@
     "predev": "npx kill-port 5173",
     "dev": "concurrently \"npm run dev --prefix frontend\" \"wait-on http://localhost:5173 && electron .\"",
     "build": "npm run build --prefix frontend && electron-builder",
+    "build:publish": "npm run build --prefix frontend && electron-builder --publish=always",
+    "release": "npm run build --prefix frontend && electron-builder --publish=onTagOrDraft",
     "postinstall": "npm install --prefix frontend && npm install --prefix server-node"
   },
   "devDependencies": {
@@ -31,29 +33,43 @@
     "directories": {
       "output": "release"
     },
+    "publish": {
+      "provider": "github",
+      "owner": "your-github-username",
+      "repo": "shvnk-flux"
+    },
     "win": {
-      "target": {
-        "target": "dir",
-        "arch": [
-          "x64"
-        ]
-      }
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "publisherName": "shvnk-Flux Team"
     },
     "mac": {
-      "target": {
-        "target": "dir",
-        "arch": [
-          "x64"
-        ]
-      }
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.video"
     },
     "linux": {
-      "target": {
-        "target": "dir",
-        "arch": [
-          "x64"
-        ]
-      }
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "AudioVideo"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
   },
   "dependencies": {
@@ -124,6 +140,7 @@
     "ejs": "^3.1.10",
     "electron-builder-squirrel-windows": "^24.13.3",
     "electron-publish": "^24.13.1",
+    "electron-updater": "^6.6.2",
     "emoji-regex": "^8.0.0",
     "end-of-stream": "^1.4.4",
     "env-paths": "^2.2.1",

@@ -1,6 +1,11 @@
 const { app, BrowserWindow, ipcMain, protocol, dialog, net } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
 const { pathToFileURL, URL } = require('url');
+
+// Configure auto-updater
+autoUpdater.checkForUpdatesAndNotify = false; // We'll handle notifications manually
+autoUpdater.autoDownload = false; // We'll ask user before downloading
 
 // Register protocol as standard scheme before app is ready
 protocol.registerSchemesAsPrivileged([
@@ -87,6 +92,110 @@ function createWindow() {
   });
 }
 
+// Auto-updater functions
+function setupAutoUpdater() {
+  // Auto-updater event handlers
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for update...');
+    if (mainWindow) {
+      mainWindow.webContents.send('update-status', { 
+        type: 'checking', 
+        message: 'Checking for updates...' 
+      });
+    }
+  });
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info.version);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-available', {
+        version: info.version,
+        releaseNotes: info.releaseNotes,
+        releaseDate: info.releaseDate
+      });
+    }
+  });
+
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('Update not available');
+    if (mainWindow) {
+      mainWindow.webContents.send('update-not-available', { 
+        version: info.version 
+      });
+    }
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.error('Update error:', err);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-error', { 
+        error: err.message 
+      });
+    }
+  });
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    console.log('Download progress:', progressObj.percent);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-download-progress', {
+        percent: progressObj.percent,
+        bytesPerSecond: progressObj.bytesPerSecond,
+        total: progressObj.total,
+        transferred: progressObj.transferred
+      });
+    }
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded');
+    if (mainWindow) {
+      mainWindow.webContents.send('update-downloaded', {
+        version: info.version
+      });
+    }
+  });
+
+  // Check for updates on startup (after 3 seconds delay)
+  setTimeout(() => {
+    if (!isDev) {
+      autoUpdater.checkForUpdates();
+    }
+  }, 3000);
+}
+
+// Setup IPC handlers for manual update operations
+function setupUpdateHandlers() {
+  ipcMain.handle('check-for-updates', async () => {
+    if (isDev) {
+      return { error: 'Updates not available in development mode' };
+    }
+    try {
+      const result = await autoUpdater.checkForUpdates();
+      return { success: true, result };
+    } catch (error) {
+      return { error: error.message };
+    }
+  });
+
+  ipcMain.handle('download-update', async () => {
+    try {
+      await autoUpdater.downloadUpdate();
+      return { success: true };
+    } catch (error) {
+      return { error: error.message };
+    }
+  });
+
+  ipcMain.handle('install-update', async () => {
+    autoUpdater.quitAndInstall();
+    return { success: true };
+  });
+
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion();
+  });
+}
+
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
   protocol.handle('app-video', (request) => {
@@ -112,6 +221,12 @@ app.whenReady().then(() => {
   
   // Setup API Handlers - replaces the TODO comment
   setupApiHandlers(ipcMain);
+  
+  // Setup auto-updater
+  setupAutoUpdater();
+  
+  // Setup update handlers
+  setupUpdateHandlers();
   
   // On macOS, re-create window when dock icon is clicked
   app.on('activate', () => {
