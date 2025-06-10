@@ -30,6 +30,9 @@
       "server-node/",
       "frontend/dist/"
     ],
+    "asarUnpack": [
+      "server-node/node_modules/@ffmpeg-installer/**/*"
+    ],
     "directories": {
       "output": "release"
     },
