@@ -27,19 +27,17 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          npm install --no-audit --no-fund
-        else
-          npm ci
-        fi
-              shell: bash
+      run: npm install --no-audit --no-fund
     
-    - name: Install submodule dependencies  
+    - name: Install submodule dependencies (frontend)
       run: |
         if [ -d "frontend" ]; then
           cd frontend && npm install --legacy-peer-deps
         fi
+      shell: bash
+    
+    - name: Install submodule dependencies (server-node)  
+      run: |
         if [ -d "server-node" ]; then
           cd server-node && npm install --legacy-peer-deps  
         fi
@@ -47,10 +45,8 @@ jobs:
     
     - name: Build frontend
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
+        if [ -d "frontend" ]; then
           cd frontend && npm run build
-        else
-          npm run build --prefix frontend
         fi
       shell: bash
     
