@@ -35,8 +35,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "your-github-username",
-      "repo": "shvnk-flux"
+      "owner": "shivankkunwar",
+      "repo": "Shvnk_Flux_App"
     },
     "win": {
       "target": [
