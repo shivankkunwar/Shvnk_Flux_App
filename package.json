@@ -12,7 +12,7 @@
     "build:publish": "npm run build --prefix frontend && electron-builder --publish=always",
     "release": "npm run build --prefix frontend && electron-builder --publish=onTagOrDraft",
     "electron:build": "electron-builder",
-    "postinstall": "npm install --prefix frontend && npm install --prefix server-node"
+    "postinstall": "echo 'Skipping submodule install - handled by CI' || true"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
