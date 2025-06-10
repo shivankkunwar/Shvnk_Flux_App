@@ -11,13 +11,13 @@
     "build": "npm run build --prefix frontend && electron-builder",
     "build:publish": "npm run build --prefix frontend && electron-builder --publish=always",
     "release": "npm run build --prefix frontend && electron-builder --publish=onTagOrDraft",
+    "electron:build": "electron-builder",
     "postinstall": "npm install --prefix frontend && npm install --prefix server-node"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "electron": "^27.3.11",
-    "electron-builder": "^24.6.4",
-    "electron-is-dev": "^2.0.0",
+    "electron-builder": "^26.0.12",
     "kill-port": "^2.0.1",
     "wait-on": "^7.2.0"
   },
@@ -42,17 +42,20 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
-      ],
-      "publisherName": "shvnk-Flux Team",
-      "sign": null
+      ]
     },
     "mac": {
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.video"
@@ -61,7 +64,9 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "category": "AudioVideo"
@@ -140,6 +145,7 @@
     "eastasianwidth": "^0.2.0",
     "ejs": "^3.1.10",
     "electron-builder-squirrel-windows": "^24.13.3",
+    "electron-is-dev": "^2.0.0",
     "electron-publish": "^24.13.1",
     "electron-updater": "^6.6.2",
     "emoji-regex": "^8.0.0",
